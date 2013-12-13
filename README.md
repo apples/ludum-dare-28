@@ -1,4 +1,4 @@
-ludum-dare-26
+ludum-dare-28
 =============
 
-My team's Ludum Dare 26 entry.
+My team's Ludum Dare 28 entry.
