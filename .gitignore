@@ -3,6 +3,7 @@
 !*.cpp
 !*.hpp
 !*.md
+!*.png
 !.gitignore
 !Makefile
 irrKlang-1.4.0/*
