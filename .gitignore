@@ -1,0 +1,9 @@
+*
+!*/
+!*.cpp
+!*.hpp
+!*.md
+!.gitignore
+!Makefile
+irrKlang-1.4.0/*
+dep/*
