@@ -4,11 +4,14 @@
 #include "screen.hpp"
 
 #include "inugami/core.hpp"
+#include "inugami/texture.hpp"
 
 class MainMenu
     : public Screen
 {
     Inugami::Core& core;
+
+    Inugami::Texture background;
 
 public:
     MainMenu(Inugami::Core& c);

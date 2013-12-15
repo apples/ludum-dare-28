@@ -3,7 +3,6 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="LD28" />
-		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<MakeCommands>
@@ -21,7 +20,11 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-pedantic" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-Og" />
 				</Compiler>
 				<MakeCommands>
 					<Build command="$make -f $makefile $target" />
@@ -38,7 +41,8 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -54,9 +58,27 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
+			<Add option="-m32" />
+			<Add option="-DGLEW_STATIC" />
+			<Add option="-DPNG_STATIC" />
+			<Add option="-DZLIB_STATIC" />
+			<Add directory="./irrklang-1.4.0/include" />
 		</Compiler>
-		<Unit filename="Makefile" />
+		<Linker>
+			<Add option="-static" />
+			<Add option="-m32" />
+			<Add library="glfw3" />
+			<Add library="glew32" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="gdi32" />
+			<Add library="png" />
+			<Add library="z" />
+			<Add library="irrklang" />
+			<Add directory="./irrklang-1.4.0/lib/win32-gcc" />
+		</Linker>
 		<Unit filename="src/audiodevice.cpp" />
 		<Unit filename="src/audiodevice.hpp" />
 		<Unit filename="src/engine.cpp" />
