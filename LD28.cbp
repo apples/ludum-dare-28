@@ -24,7 +24,6 @@
 					<Add option="-Wextra" />
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add option="-Og" />
 				</Compiler>
 				<MakeCommands>
 					<Build command="$make -f $makefile $target" />
@@ -65,6 +64,8 @@
 			<Add option="-DPNG_STATIC" />
 			<Add option="-DZLIB_STATIC" />
 			<Add directory="./irrklang-1.4.0/include" />
+			<Add directory="./yaml-cpp-0.5.1/include" />
+			<Add directory="E:/boost_1_55_0" />
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
@@ -77,12 +78,24 @@
 			<Add library="png" />
 			<Add library="z" />
 			<Add library="irrklang" />
+			<Add library="yaml-cpp" />
 			<Add directory="./irrklang-1.4.0/lib/win32-gcc" />
+			<Add directory="./yaml-cpp-0.5.1" />
 		</Linker>
 		<Unit filename="src/audiodevice.cpp" />
 		<Unit filename="src/audiodevice.hpp" />
+		<Unit filename="src/bank.cpp" />
+		<Unit filename="src/bank.hpp" />
+		<Unit filename="src/ecposition.cpp" />
+		<Unit filename="src/ecposition.hpp" />
+		<Unit filename="src/ecsprite.cpp" />
+		<Unit filename="src/ecsprite.hpp" />
 		<Unit filename="src/engine.cpp" />
 		<Unit filename="src/engine.hpp" />
+		<Unit filename="src/entity.cpp" />
+		<Unit filename="src/entity.hpp" />
+		<Unit filename="src/game.cpp" />
+		<Unit filename="src/game.hpp" />
 		<Unit filename="src/inugami/animatedsprite.cpp" />
 		<Unit filename="src/inugami/animatedsprite.hpp" />
 		<Unit filename="src/inugami/camera.cpp" />
@@ -129,6 +142,8 @@
 		<Unit filename="src/inugami/transform.cpp" />
 		<Unit filename="src/inugami/transform.hpp" />
 		<Unit filename="src/inugami/utility.hpp" />
+		<Unit filename="src/level.cpp" />
+		<Unit filename="src/level.hpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/mainmenu.cpp" />
 		<Unit filename="src/mainmenu.hpp" />

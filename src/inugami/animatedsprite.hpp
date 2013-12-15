@@ -78,7 +78,8 @@ public:
      */
     using FrameList = std::vector<Frame>;
 
-    AnimatedSprite() = delete;
+    /// @todo Document.
+    AnimatedSprite();
 
     /*! @brief Primary constructor
      *

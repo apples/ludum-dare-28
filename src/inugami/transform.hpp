@@ -49,6 +49,18 @@ public:
 
     /*! @brief Translate.
      *
+     *  @todo Document.
+     */
+    Transform& translate(float x, float y);
+
+    /*! @brief Translate.
+     *
+     *  @todo Document.
+     */
+    Transform& translate(float x, float y, float z);
+
+    /*! @brief Translate.
+     *
      *  @param pos Vector to translate along.
      */
     Transform& translate(const Vec3& pos);

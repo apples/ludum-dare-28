@@ -1,10 +1,10 @@
 *
 !*/
 !data/**
+!src/**
 !*.cbp
-!*.cpp
-!*.hpp
 !*.md
 !.gitignore
 !Makefile
 irrKlang-1.4.0/
+yaml-cpp-0.5.1/

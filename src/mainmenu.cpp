@@ -1,6 +1,7 @@
 #include "mainmenu.hpp"
 
 #include "audiodevice.hpp"
+#include "game.hpp"
 #include "meta.hpp"
 
 #include "inugami/camera.hpp"
@@ -30,8 +31,11 @@ bool MainMenu::isTunnel() const
 Screen::Event MainMenu::tick()
 {
     auto keyESC = core.iface->key(0_ivkFunc);
+    auto keyEnter = core.iface->key(GLFW_KEY_ENTER);
 
-    if (keyESC) return {Event::POP, this};
+    if (keyESC.pressed()) return {Event::POP, this};
+
+    if (keyEnter.pressed()) return {Event::PUSH, new Game(core)};
 
     return {Event::NONE, nullptr};
 }
@@ -42,6 +46,5 @@ void MainMenu::draw()
     core.modelMatrix(Transform{});
 
     background.bind(0);
-
     Mesh(Geometry::fromRect(800.f, 600.f)).draw();
 }
