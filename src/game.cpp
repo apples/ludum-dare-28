@@ -34,8 +34,8 @@ void Game::resetPlayer()
     auto& pos = *player->getComponent<ECPosition>();
     auto& sprite = *player->getComponent<ECSprite>();
 
-    pos.x = 32;
-    pos.y = 32;
+    pos.x = 64;
+    pos.y = 64;
 
     auto& sheet = sprite.anims["walk"];
 
