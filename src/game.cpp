@@ -36,6 +36,8 @@ void Game::resetPlayer()
 
     pos.x = 64;
     pos.y = 64;
+    pos.width = 24;
+    pos.height = 24;
 
     auto& sheet = sprite.anims["walk"];
 

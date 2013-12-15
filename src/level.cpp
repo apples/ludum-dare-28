@@ -1,5 +1,6 @@
 #include "level.hpp"
 
+#include "eccollision.hpp"
 #include "ecposition.hpp"
 #include "ecsprite.hpp"
 #include "entity.hpp"
@@ -61,13 +62,26 @@ Level::Level(const string& filename)
                 { "position", [&]()
                     {
                         ECPosition* ptr = ent->addComponent<ECPosition>();
-                        ptr->x = comp.second["x"].as<decltype(ptr->x)>();
-                        ptr->y = comp.second["y"].as<decltype(ptr->y)>();
+
+                        ptr->x = comp.second["x"].as<double>();
+                        ptr->y = comp.second["y"].as<double>();
+
+                        auto&& nw = comp.second["width"];
+                        auto&& nh = comp.second["height"];
+
+                        if (nw) ptr->width  = nw.as<double>();
+                        if (nh) ptr->height = nh.as<double>();
+                    }
+                } ,
+                { "collision", [&]()
+                    {
+                        ECCollision* ptr = ent->addComponent<ECCollision>();
                     }
                 } ,
                 { "sprite", [&]()
                     {
                         ECSprite* ptr = ent->addComponent<ECSprite>();
+
                         for (auto&& anim : comp.second)
                         {
                             string animName = anim.first.as<string>();

@@ -9,6 +9,8 @@ class ECPosition
   public:
     double x;
     double y;
+    double width;
+    double height;
 };
 
 #endif // ECPOSITION_HPP

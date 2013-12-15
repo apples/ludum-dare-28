@@ -15,18 +15,23 @@ entities:
     - 
         chest:
             - hp5
-        collision:
-            width: 24
-            height: 24
+        collision: ~
         position:
             x: 32
             y: 32
+            width: 24
+            height: 24
         sprite:
             closed:
                 image: data/img/chest1.png
                 width: 24
                 height: 24
                 mode: 1
+                frames:
+                    - 
+                        row: 0
+                        col: 0
+                        duration: 1
             open:
                 image: data/img/chest1.png
                 width: 24
