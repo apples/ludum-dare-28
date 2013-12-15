@@ -26,6 +26,7 @@
  ******************************************************************************/
 
 #include "engine.hpp"
+#include "audiodevice.hpp"
 
 #include "meta.hpp"
 
@@ -44,21 +45,28 @@
 #include <utility>
 
 using namespace Inugami;
+using namespace irrklang;
 
 Engine::Engine(const RenderParams &params)
-    : Core(params)
+    : core(params)
 {
     ScopedProfile prof(profiler, "CustomCore: Constructor");
 
     logger->log("Adding callbacks...");
-    addCallback([&]{ tick(); draw(); }, 60.0);
+    core.addCallback([this]{ tick(); draw(); }, 60.0);
 
-    setWindowTitle("Ludum Dare 26", true);
+    core.setWindowTitle("Ludum Dare 26", true);
+
+    auto&& adev = AudioDevice::inst();
+    auto tst = adev.loadSource("data/fart.ogg");
+    adev.play(tst);
 }
 
 void Engine::tick()
 {
     ScopedProfile prof(profiler, "CustomCore: Tick");
+
+    auto iface = core.iface.get().get();
 
     //Keybinds can be stored in proxies (efficient!)
     auto keyW     = iface->key('W');
@@ -80,12 +88,11 @@ void Engine::tick()
     auto mousePos = iface->getMousePos();
 
     //Key Proxies can be cast to bool
-    if (keyESC || shouldClose())
+    if (keyESC || core.shouldClose())
     {
-        running = false;
+        core.running = false;
         return;
     }
-
 }
 
 void Engine::draw()
@@ -93,8 +100,8 @@ void Engine::draw()
     ScopedProfile prof(profiler, "CustomCore: Draw");
 
     //beginFrame() sets the OpenGL context to the proper initial state
-    beginFrame();
+    core.beginFrame();
 
     //endFrame() swaps the buffer to the screen
-    endFrame();
+    core.endFrame();
 }

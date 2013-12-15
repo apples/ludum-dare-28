@@ -13,7 +13,7 @@ CPPFLAGS += -I$(IRRKLANG_DIR)/include
 # C++ Compiler
 
 CXX       = g++ -m32
-CXXFLAGS += -O3 -Wall -Weffc++ -std=c++11 -pedantic
+CXXFLAGS += -Wall -Weffc++ -std=c++11 -pedantic
 
 # Linker
 
@@ -34,15 +34,29 @@ MAIN_EXE = game.exe
 
 # Targets
 
-.PHONY: all
-all: $(MAIN_EXE)
+.PHONY: all Release Debug
+
+all: Release
+
+Release: CXXFLAGS += -O3
+Release: $(MAIN_EXE)
+
+Debug: CXXFLAGS += -Og
+Debug: d$(MAIN_EXE)
 
 $(MAIN_EXE): $(OBJ_FILES)
-	$(LD) $(LDFLAGS) -o $@ $(OBJ_FILES) $(LDLIBS)
+	$(LD) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+d$(MAIN_EXE): $(patsubst obj/%.o,objd/%.o,$(OBJ_FILES))
+	$(LD) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 # All Sources
 
 obj/%.o: src/%.cpp dep/%.d
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+objd/%.o: src/%.cpp dep/%.d
 	@mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
@@ -60,4 +74,4 @@ endif
 
 .PHONY: clean
 clean:
-	rm -rf $(MAIN_EXE) obj/ dep/
+	rm -rf $(MAIN_EXE) d$(MAIN_EXE) obj/ objd/ dep/

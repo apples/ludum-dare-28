@@ -37,9 +37,11 @@
 #include "inugami/texture.hpp"
 
 class Engine
-    : public Inugami::Core
 {
+    Inugami::Core core;
 public:
+    using RenderParams = Inugami::Core::RenderParams;
+
     Engine(const RenderParams& params);
 
     void tick();
