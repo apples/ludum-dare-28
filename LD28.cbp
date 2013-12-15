@@ -88,6 +88,10 @@
 		<Unit filename="src/bank.hpp" />
 		<Unit filename="src/eccollision.cpp" />
 		<Unit filename="src/eccollision.hpp" />
+		<Unit filename="src/ecitem.cpp" />
+		<Unit filename="src/ecitem.hpp" />
+		<Unit filename="src/ecplayer.cpp" />
+		<Unit filename="src/ecplayer.hpp" />
 		<Unit filename="src/ecposition.cpp" />
 		<Unit filename="src/ecposition.hpp" />
 		<Unit filename="src/ecsprite.cpp" />

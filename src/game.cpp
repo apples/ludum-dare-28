@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include "ecitem.hpp"
 #include "ecposition.hpp"
 #include "ecsprite.hpp"
 #include "level.hpp"
@@ -79,6 +80,7 @@ Screen::Event Game::tick()
     auto keyDown = core.iface->key('D'_ivkArrow);
     auto keyLeft = core.iface->key('L'_ivkArrow);
     auto keyRight = core.iface->key('R'_ivkArrow);
+    auto keySpace = core.iface->key(' '_ivk);
     auto keyESC = core.iface->key(0_ivkFunc);
 
     if (keyESC.pressed()) return {Event::POP, this};
@@ -100,6 +102,57 @@ Screen::Event Game::tick()
     if (keyDown)  --pos.y;
     if (keyLeft)  --pos.x;
     if (keyRight) ++pos.x;
+
+    static int cnt = 0;
+
+    if (keySpace.pressed())
+    {
+        int r = (pos.y-pos.height/3.0)/32.0+0.5;
+        int c = pos.x/32.0+0.5;
+        level.tileAt(r, c) = 1;
+
+        if (++cnt == 5)
+        {
+            cnt = 0;
+
+            Entity* coin = level.newEntity();
+
+            ECPosition& cpos = *coin->addComponent<ECPosition>();
+            ECSprite& csprite = *coin->addComponent<ECSprite>();
+            ECItem& citem = *coin->addComponent<ECItem>();
+
+            cpos.x = c*32.0;
+            cpos.y = r*32.0;
+            cpos.width = 8.0;
+            cpos.height = 8.0;
+
+            auto& csheet = csprite.anims["walk"];
+
+            Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 24, 24);
+
+            csheet.setSpritesheet(move(ctmp));
+            csheet.setSprites({
+                {0, 0} ,
+                {0, 1} ,
+                {0, 2} ,
+                {0, 3} ,
+                {0, 4} ,
+                {0, 5} ,
+            });
+            csheet.setSequence({
+                {0, 10} ,
+                {1, 10} ,
+                {2, 10} ,
+                {3, 10} ,
+                {4, 10} ,
+                {5, 10} ,
+            });
+            csheet.setMode(AnimatedSprite::Mode::BOUNCE);
+
+            csprite.currentAnim = &csheet;
+
+        }
+    }
 
     return {Event::NONE, nullptr};
 }
