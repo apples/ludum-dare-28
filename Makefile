@@ -41,7 +41,8 @@ all: Release
 Release: CXXFLAGS += -O3
 Release: $(MAIN_EXE)
 
-Debug: CXXFLAGS += -Og
+Debug: CXXFLAGS += -Og -g
+Debug: LDFLAGS += -g
 Debug: d$(MAIN_EXE)
 
 $(MAIN_EXE): $(OBJ_FILES)

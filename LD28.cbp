@@ -56,6 +56,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Makefile" />
 		<Unit filename="src/audiodevice.cpp" />
 		<Unit filename="src/audiodevice.hpp" />
 		<Unit filename="src/engine.cpp" />
@@ -107,13 +108,26 @@
 		<Unit filename="src/inugami/transform.hpp" />
 		<Unit filename="src/inugami/utility.hpp" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/mainmenu.cpp" />
+		<Unit filename="src/mainmenu.hpp" />
 		<Unit filename="src/meta.cpp" />
 		<Unit filename="src/meta.hpp" />
+		<Unit filename="src/screen.cpp" />
+		<Unit filename="src/screen.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
 			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

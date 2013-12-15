@@ -26,8 +26,9 @@
  ******************************************************************************/
 
 #include "engine.hpp"
-#include "audiodevice.hpp"
 
+#include "audiodevice.hpp"
+#include "mainmenu.hpp"
 #include "meta.hpp"
 
 #include "inugami/camera.hpp"
@@ -49,6 +50,7 @@ using namespace irrklang;
 
 Engine::Engine(const RenderParams &params)
     : core(params)
+    , screens()
 {
     ScopedProfile prof(profiler, "CustomCore: Constructor");
 
@@ -57,41 +59,51 @@ Engine::Engine(const RenderParams &params)
 
     core.setWindowTitle("Ludum Dare 26", true);
 
-    auto&& adev = AudioDevice::inst();
-    auto tst = adev.loadSource("data/fart.ogg");
-    adev.play(tst);
+    screens.push_back(ScreenPtr(new MainMenu(core)));
+}
+
+void Engine::go()
+{
+    core.go();
 }
 
 void Engine::tick()
 {
     ScopedProfile prof(profiler, "CustomCore: Tick");
 
-    auto iface = core.iface.get().get();
+    core.iface->poll();
 
-    //Keybinds can be stored in proxies (efficient!)
-    auto keyW     = iface->key('W');
-    auto keyA     = iface->key('A');
-    auto keyS     = iface->key('S');
-    auto keyD     = iface->key('D');
-    auto keyZ     = iface->key('Z');
-    auto keyX     = iface->key('X');
-    auto keyC     = iface->key('C');
-    auto keySpace = iface->key(' ');
-    auto keyESC   = iface->key(0_ivkFunc);
-    auto keyF1    = iface->key(1_ivkFunc);
-    auto keyF2    = iface->key(2_ivkFunc);
-    auto keyF5    = iface->key(5_ivkFunc);
-
-    //Poll must be called every frame
-    iface->poll();
-
-    auto mousePos = iface->getMousePos();
-
-    //Key Proxies can be cast to bool
-    if (keyESC || core.shouldClose())
+    if (core.shouldClose() || screens.empty())
     {
         core.running = false;
         return;
+    }
+
+    auto iter = screens.rbegin();
+    bool tunnel = true;
+
+    while (tunnel && iter != screens.rend())
+    {
+        auto ev = (*iter)->tick();
+
+        switch (ev.type)
+        {
+            case Screen::Event::PUSH:
+            {
+                screens.push_back(ScreenPtr(ev.value));
+                tunnel = false;
+                continue;
+            break;}
+
+            case Screen::Event::POP:
+            {
+                screens.erase((++iter).base(), screens.end());
+                tunnel = false;
+                continue;
+            break;}
+        }
+
+        tunnel = (*iter)->isTunnel();
     }
 }
 
@@ -99,9 +111,21 @@ void Engine::draw()
 {
     ScopedProfile prof(profiler, "CustomCore: Draw");
 
-    //beginFrame() sets the OpenGL context to the proper initial state
-    core.beginFrame();
+    if (!screens.empty())
+    {
+        core.beginFrame();
 
-    //endFrame() swaps the buffer to the screen
-    core.endFrame();
+        auto first = (++find_if(
+              screens.rbegin()
+            , screens.rend()
+            , [](const ScreenPtr& ptr){ return ptr->isOpaque(); }
+        )).base();
+
+        for (auto iter = first, eiter = screens.end(); iter!=eiter; ++iter)
+        {
+            (*iter)->draw();
+        }
+
+        core.endFrame();
+    }
 }
