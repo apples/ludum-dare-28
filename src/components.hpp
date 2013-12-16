@@ -37,6 +37,8 @@ class ECPlayer
   public:
     int gold = 0;
     int hp = 100;
+
+    int digTime = 0;
 };
 
 class ECPosition

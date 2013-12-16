@@ -37,33 +37,65 @@ void Game::resetPlayer()
     auto& pos = *player->getComponent<ECPosition>();
     auto& sprite = *player->getComponent<ECSprite>();
 
-    pos.x = 64;
-    pos.y = 64;
+    pos.x = level.getWidth()*16.0-16.0;
+    pos.y = level.getHeight()*16.0-16.0;
     pos.width = 24;
     pos.height = 24;
 
-    auto& sheet = sprite.anims["walk"];
+    {
+        auto& sheet = sprite.anims["walk"];
 
-    sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
-    sheet.setSprites({
-        {0, 0} ,
-        {0, 1} ,
-        {0, 2} ,
-        {0, 3} ,
-        {0, 4} ,
-        {0, 5} ,
-    });
-    sheet.setSequence({
-        {0, 10} ,
-        {1, 10} ,
-        {2, 10} ,
-        {3, 10} ,
-        {4, 10} ,
-        {5, 10} ,
-    });
-    sheet.setMode(AnimatedSprite::Mode::BOUNCE);
+        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSprites({
+            {0, 0} ,
+            {0, 1} ,
+            {0, 2} ,
+            {0, 3} ,
+            {0, 4} ,
+            {0, 5} ,
+        });
+        sheet.setSequence({
+            {0, 6} ,
+            {1, 6} ,
+            {2, 6} ,
+            {3, 6} ,
+            {4, 6} ,
+            {5, 6} ,
+        });
+        sheet.setMode(AnimatedSprite::Mode::BOUNCE);
 
-    sprite.currentAnim = &sheet;
+        sprite.currentAnim = &sheet;
+    }
+
+    {
+        auto& sheet = sprite.anims["dig"];
+
+        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSprites({
+            {0, 0} ,
+            {0, 2} ,
+            {0, 5} ,
+        });
+        sheet.setSequence({
+            {0, 1} ,
+            {1, 1} ,
+            {2, 1} ,
+        });
+        sheet.setMode(AnimatedSprite::Mode::BOUNCE);
+    }
+
+    {
+        auto& sheet = sprite.anims["idle"];
+
+        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSprites({
+            {0, 0} ,
+        });
+        sheet.setSequence({
+            {0, 1} ,
+        });
+        sheet.setMode(AnimatedSprite::Mode::LOOP);
+    }
 }
 
 bool Game::isOpaque() const
@@ -97,11 +129,114 @@ Screen::Event Game::tick()
         anim->tick();
     }
 
-    auto& pos = *player->getComponent<ECPosition>();
-    if (keyUp)    pos.dy+=1.0;
-    if (keyDown)  pos.dy-=1.0;
-    if (keyLeft)  pos.dx-=1.0;
-    if (keyRight) pos.dx+=1.0;
+    ECPosition& pos = *player->getComponent<ECPosition>();
+    ECPlayer* p = player->getComponent<ECPlayer>();
+
+    if (p->digTime > 0)
+    {
+        --p->digTime;
+
+        int r = (pos.y-pos.height/3.0)/32.0+0.5;
+        int c = pos.x/32.0+0.5;
+        auto& tile = level.tileAt(r, c);
+
+        if (tile != 1 && p->digTime < 20)
+        {
+            tile = 1;
+
+            auto& itemname = level.itemAt(r, c);
+
+            if (!itemname.empty() && itemname != "~")
+            {
+                stringstream ss (itemname);
+                int param;
+                ss >> itemname >> param;
+
+                Entity* item = level.newEntity();
+
+                ECPosition& cpos = *item->addComponent<ECPosition>();
+                ECSprite& csprite = *item->addComponent<ECSprite>();
+                ECItem& citem = *item->addComponent<ECItem>();
+                *item->addComponent<ECCollision>();
+
+                citem.effect = itemname;
+                citem.param = param;
+
+                cpos.x = c*32.0;
+                cpos.y = r*32.0;
+                cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
+                cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
+                cpos.friction = 0.05;
+                cpos.bounce = 1.0;
+
+                cpos.width = 8.0;
+                cpos.height = 8.0;
+
+                if (itemname == "gold")
+                {
+                    cpos.width *= (param+5)/10.0;
+                    cpos.height *= (param+5)/10.0;
+                }
+
+                auto& csheet = csprite.anims["item"];
+
+                Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 16, 16);
+
+                csheet.setSpritesheet(move(ctmp));
+                csheet.setSprites({
+                    {0, 0} ,
+                    {0, 1} ,
+                    {0, 2} ,
+                    {0, 3} ,
+                    {0, 4} ,
+                    {0, 5} ,
+                    {0, 6} ,
+                    {0, 7} ,
+                });
+                csheet.setSequence({
+                    {0, 6} ,
+                    {1, 6} ,
+                    {2, 6} ,
+                    {3, 6} ,
+                    {4, 6} ,
+                    {5, 6} ,
+                    {6, 6} ,
+                    {7, 6} ,
+                });
+                csheet.setMode(AnimatedSprite::Mode::BOUNCE);
+                csheet.scale = 0.5;
+
+                csprite.currentAnim = &csheet;
+            }
+        }
+    }
+    else
+    {
+        ECSprite* ps = player->getComponent<ECSprite>();
+        ps->currentAnim = &ps->anims["idle"];
+        bool wlk = false;
+        if (keyUp)
+        {
+            pos.dy+=1.0;
+            wlk = true;
+        }
+        if (keyDown)
+        {
+            pos.dy-=1.0;
+            wlk = true;
+        }
+        if (keyLeft)
+        {
+            pos.dx-=1.0;
+            wlk = true;
+        }
+        if (keyRight)
+        {
+            pos.dx+=1.0;
+            wlk = true;
+        }
+        if (wlk) ps->currentAnim = &ps->anims["walk"];
+    }
 
     auto&& walls = level.getEntities<ECPosition, ECSolid>();
 
@@ -165,8 +300,6 @@ Screen::Event Game::tick()
         }
     }
 
-    static int cnt = 0;
-
     if (keySpace.pressed())
     {
         int r = (pos.y-pos.height/3.0)/32.0+0.5;
@@ -175,80 +308,12 @@ Screen::Event Game::tick()
 
         if (tile != 1)
         {
-            tile = 1;
-
-            auto& itemname = level.itemAt(r, c);
-
-            if (!itemname.empty() && itemname != "~")
             {
-                logger->log("You found a ", itemname);
-
-                stringstream ss (itemname);
-                int param;
-                ss >> itemname >> param;
-
-                Entity* item = level.newEntity();
-
-                ECPosition& cpos = *item->addComponent<ECPosition>();
-                ECSprite& csprite = *item->addComponent<ECSprite>();
-                ECItem& citem = *item->addComponent<ECItem>();
-                *item->addComponent<ECCollision>();
-
-                citem.effect = itemname;
-                citem.param = param;
-
-                cpos.x = c*32.0;
-                cpos.y = r*32.0;
-                cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
-                cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
-                cpos.friction = 0.05;
-                cpos.bounce = 1.0;
-
-                cpos.width = 8.0;
-                cpos.height = 8.0;
-
-                if (itemname == "gold")
-                {
-                    cpos.width *= (param+5)/10.0;
-                    cpos.height *= (param+5)/10.0;
-                }
-
-                auto& csheet = csprite.anims["item"];
-
-                Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 16, 16);
-
-                csheet.setSpritesheet(move(ctmp));
-                csheet.setSprites({
-                    {0, 0} ,
-                    {0, 1} ,
-                    {0, 2} ,
-                    {0, 3} ,
-                    {0, 4} ,
-                    {0, 5} ,
-                    {0, 6} ,
-                    {0, 7} ,
-                });
-                csheet.setSequence({
-                    {0, 6} ,
-                    {1, 6} ,
-                    {2, 6} ,
-                    {3, 6} ,
-                    {4, 6} ,
-                    {5, 6} ,
-                    {6, 6} ,
-                    {7, 6} ,
-                });
-                csheet.setMode(AnimatedSprite::Mode::BOUNCE);
-                csheet.scale = 0.5;
-
-                csprite.currentAnim = &csheet;
+                p->digTime = 60;
+                ECSprite* ps = player->getComponent<ECSprite>();
+                ps->currentAnim = &ps->anims["dig"];
+                ps->currentAnim->reset();
             }
-        }
-
-        if (++cnt == 5)
-        {
-            cnt = 0;
-
         }
     }
 
