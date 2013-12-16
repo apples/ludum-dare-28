@@ -43,7 +43,7 @@ void  adjustVelocity(ECPosition& a, const ECPosition& b)
 
     using MP = double ECPosition::*;
     using BP = double Bounds::*;
-    auto adjust = [&](MP loc, MP vel, MP wid, BP bot, BP lft, BP rgt)
+    auto adjust = [&](MP loc, MP vel, MP wid, MP c, BP bot, BP lft, BP rgt)
     {
         if (a.*vel != 0.0)
         {
@@ -59,6 +59,7 @@ void  adjustVelocity(ECPosition& a, const ECPosition& b)
                     {
                         double new_vel = b_bounds.*lft - a_bounds.*rgt;
                         if (sgn(new_vel) != sgn(a.*vel)) new_vel = 0.0;
+                        a.*c += new_vel - a.*vel;
                         a.*vel = new_vel;
                     }
                 }
@@ -69,6 +70,7 @@ void  adjustVelocity(ECPosition& a, const ECPosition& b)
                     {
                         double new_vel = b_bounds.*rgt - a_bounds.*lft;
                         if (sgn(new_vel) != sgn(a.*vel)) new_vel = 0.0;
+                        a.*c += new_vel - a.*vel;
                         a.*vel = new_vel;
                     }
                 }
@@ -77,12 +79,12 @@ void  adjustVelocity(ECPosition& a, const ECPosition& b)
     };
 
     adjust(
-          &ECPosition::x, &ECPosition::dx, &ECPosition::height
+          &ECPosition::x, &ECPosition::dx, &ECPosition::height, &ECPosition::cx
         , &Bounds::bottom, &Bounds::left, &Bounds::right
     );
 
     adjust(
-          &ECPosition::y, &ECPosition::dy, &ECPosition::width
+          &ECPosition::y, &ECPosition::dy, &ECPosition::width, &ECPosition::cy
         , &Bounds::left, &Bounds::bottom, &Bounds::top
     );
 }

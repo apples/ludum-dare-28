@@ -3,6 +3,7 @@
 #include "components.hpp"
 #include "level.hpp"
 #include "meta.hpp"
+#include "random.hpp"
 
 #include "inugami/camera.hpp"
 #include "inugami/geometry.hpp"
@@ -95,16 +96,15 @@ Screen::Event Game::tick()
     }
 
     auto& pos = *player->getComponent<ECPosition>();
-    pos.dx *= 0.5;
-    pos.dy *= 0.5;
     if (keyUp)    pos.dy+=1.0;
     if (keyDown)  pos.dy-=1.0;
     if (keyLeft)  pos.dx-=1.0;
     if (keyRight) pos.dx+=1.0;
 
+    auto&& walls = level.getEntities<ECPosition, ECSolid>();
+
     {
         auto&& ents = level.getEntities<ECPosition>();
-        auto&& walls = level.getEntities<ECPosition, ECSolid>();
         for (auto&& tup : ents)
         {
             Entity& entity = *get<0>(tup);
@@ -129,6 +129,38 @@ Screen::Event Game::tick()
 
             ent.x += ent.dx;
             ent.y += ent.dy;
+            ent.dx *= 1.0 - ent.friction;
+            ent.dy *= 1.0 - ent.friction;
+            ent.dx += ent.bounce * ent.cx;
+            ent.dy += ent.bounce * ent.cy;
+            ent.cx = 0.0;
+            ent.cy = 0.0;
+        }
+    }
+
+    {
+        auto&& items = level.getEntities<ECPosition, ECItem>();
+        for (auto&& tup : items)
+        {
+            Entity& entity = *get<0>(tup);
+            ECPosition& ipos = *get<1>(tup);
+            ECItem& item = *get<2>(tup);
+
+            if (--item.cooldown < 0)
+            {
+                double mk_left = ipos.x - ipos.width/2.0 - pos.x - pos.width/2.0;
+                double mk_right = mk_left + ipos.width + pos.width;
+
+                double mk_bottom = ipos.y - ipos.height/2.0 - pos.y - pos.height/2.0;
+                double mk_top = mk_bottom + ipos.height + pos.height;
+
+                if (mk_left < 0.0 && mk_right > 0.0
+                 && mk_bottom < 0.0 && mk_top > 0.0)
+                {
+                    item.applyEffect(player);
+                    entity.addComponent<ECDestroy>();
+                }
+            }
         }
     }
 
@@ -149,9 +181,14 @@ Screen::Event Game::tick()
             ECPosition& cpos = *coin->addComponent<ECPosition>();
             ECSprite& csprite = *coin->addComponent<ECSprite>();
             ECItem& citem = *coin->addComponent<ECItem>();
+            *coin->addComponent<ECCollision>();
 
             cpos.x = c*32.0;
             cpos.y = r*32.0;
+            cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
+            cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
+            cpos.friction = 0.05;
+            cpos.bounce = 1.0;
             cpos.width = 8.0;
             cpos.height = 8.0;
 
@@ -179,9 +216,10 @@ Screen::Event Game::tick()
             csheet.setMode(AnimatedSprite::Mode::BOUNCE);
 
             csprite.currentAnim = &csheet;
-
         }
     }
+
+    level.eraseEntities<ECDestroy>();
 
     return {Event::NONE, nullptr};
 }

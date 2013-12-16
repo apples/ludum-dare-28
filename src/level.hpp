@@ -3,6 +3,7 @@
 
 #include "entity.hpp"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -49,6 +50,20 @@ class Level
         }
 
         return rval;
+    }
+
+    template <typename T>
+    void eraseEntities()
+    {
+        using Ptr = std::shared_ptr<Entity>;
+        auto should_erase = [](const Ptr& p)
+        {
+            return bool(p->getComponent<T>());
+        };
+
+        auto b = std::begin(entities);
+        auto e = std::end(entities);
+        entities.erase(std::remove_if(b, e, should_erase), e);
     }
 
   private:

@@ -146,6 +146,8 @@
 		<Unit filename="src/mainmenu.hpp" />
 		<Unit filename="src/meta.cpp" />
 		<Unit filename="src/meta.hpp" />
+		<Unit filename="src/random.cpp" />
+		<Unit filename="src/random.hpp" />
 		<Unit filename="src/screen.cpp" />
 		<Unit filename="src/screen.hpp" />
 		<Extensions>
