@@ -46,7 +46,7 @@ entities:
     - 
         chest:
             - hp5
-        solid: ~
+        solid:       ~
         position:
             x: 32
             y: 32
