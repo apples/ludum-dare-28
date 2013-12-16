@@ -1,0 +1,90 @@
+#include "components.hpp"
+
+#include "inugami/math.hpp"
+
+#include <map>
+#include <functional>
+
+using namespace std;
+using namespace Inugami;
+
+void ECItem::applyEffect(Entity* ent) const
+{
+    ECPlayer& player = *ent->getComponent<ECPlayer>();
+
+    map<string, function<void()>> funcs = {
+        {"hp5", [&]{player.hp += 5;}} ,
+        {"gold5", [&]{player.gold += 5;}} ,
+    };
+}
+
+void  adjustVelocity(ECPosition& a, const ECPosition& b)
+{
+    struct Bounds
+    {
+        double left;
+        double right;
+        double bottom;
+        double top;
+    };
+
+    auto make_bounds = [](const ECPosition& p)
+    {
+        Bounds rval;
+        rval.left   = p.x - p.width/2.0;
+        rval.bottom = p.y - p.height/2.0;
+        rval.right = rval.left + p.width;
+        rval.top   = rval.bottom + p.height;
+        return rval;
+    };
+
+    Bounds a_bounds = make_bounds(a);
+    Bounds b_bounds = make_bounds(b);
+
+    // Horizontal
+
+    using MP = double ECPosition::*;
+    using BP = double Bounds::*;
+    auto adjust = [&](MP loc, MP vel, MP wid, BP bot, BP lft, BP rgt)
+    {
+        if (a.*vel != 0.0)
+        {
+            double m_bottom = b_bounds.*bot - a_bounds.*bot - a.*wid;
+            double m_top = m_bottom + a.*wid + b.*wid;
+
+            if (m_bottom < 0.0 && m_top > 0.0)
+            {
+                if (a.*vel > 0.0)
+                {
+                    double new_right = a_bounds.*rgt + a.*vel;
+                    if (new_right > b_bounds.*lft && new_right < b_bounds.*rgt)
+                    {
+                        double new_vel = b_bounds.*lft - a_bounds.*rgt;
+                        if (sgn(new_vel) != sgn(a.*vel)) new_vel = 0.0;
+                        a.*vel = new_vel;
+                    }
+                }
+                else
+                {
+                    double new_left = a_bounds.*lft + a.*vel;
+                    if (new_left < b_bounds.*rgt && new_left > b_bounds.*lft)
+                    {
+                        double new_vel = b_bounds.*rgt - a_bounds.*lft;
+                        if (sgn(new_vel) != sgn(a.*vel)) new_vel = 0.0;
+                        a.*vel = new_vel;
+                    }
+                }
+            }
+        }
+    };
+
+    adjust(
+          &ECPosition::x, &ECPosition::dx, &ECPosition::height
+        , &Bounds::bottom, &Bounds::left, &Bounds::right
+    );
+
+    adjust(
+          &ECPosition::y, &ECPosition::dy, &ECPosition::width
+        , &Bounds::left, &Bounds::bottom, &Bounds::top
+    );
+}

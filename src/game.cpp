@@ -1,9 +1,6 @@
 #include "game.hpp"
 
-#include "eccollision.hpp"
-#include "ecitem.hpp"
-#include "ecposition.hpp"
-#include "ecsprite.hpp"
+#include "components.hpp"
 #include "level.hpp"
 #include "meta.hpp"
 
@@ -128,11 +125,10 @@ Screen::Event Game::tick()
                     adjustVelocity(ent, ent2);
                     adjustVelocity(ent2, ent);
                 }
-
             }
+
             ent.x += ent.dx;
             ent.y += ent.dy;
-
         }
     }
 

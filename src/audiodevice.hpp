@@ -8,16 +8,11 @@
 
 class AudioDevice
 {
+  public:
     using Engine = irrklang::ISoundEngine*;
     using Source = irrklang::ISoundSource*;
     using Sound  = irrklang::ISound*;
 
-    Engine engine;
-    std::map<std::string, Source> sourceMap;
-
-    AudioDevice();
-
-public:
     static AudioDevice& inst();
 
     ~AudioDevice();
@@ -28,6 +23,12 @@ public:
     Sound loop(Source src) const;
 
     void stop(Sound src) const;
+
+  private:
+    Engine engine;
+    std::map<std::string, Source> sourceMap;
+
+    AudioDevice();
 };
 
 #endif // AUDIODEVICE_HPP

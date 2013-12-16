@@ -1,6 +1,7 @@
 #ifndef MAINMENU_HPP
 #define MAINMENU_HPP
 
+#include "audiodevice.hpp"
 #include "screen.hpp"
 
 #include "inugami/core.hpp"
@@ -12,6 +13,9 @@ class MainMenu
     Inugami::Core& core;
 
     Inugami::Texture background;
+
+    AudioDevice::Source bgm;
+    AudioDevice::Sound bgmtrack;
 
 public:
     MainMenu(Inugami::Core& c);

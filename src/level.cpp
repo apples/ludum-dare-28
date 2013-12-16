@@ -1,8 +1,6 @@
 #include "level.hpp"
 
-#include "eccollision.hpp"
-#include "ecposition.hpp"
-#include "ecsprite.hpp"
+#include "components.hpp"
 #include "entity.hpp"
 #include "meta.hpp"
 

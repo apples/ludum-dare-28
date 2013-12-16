@@ -16,6 +16,8 @@ using namespace Inugami;
 MainMenu::MainMenu(Core& c)
     : core(c)
     , background(Image::fromPNG("data/img/mainmenu.png"), false, false)
+    , bgm(AudioDevice::inst().loadSource("data/bgm/bgm1.ogg"))
+    , bgmtrack(AudioDevice::inst().loop(bgm))
 {}
 
 bool MainMenu::isOpaque() const
