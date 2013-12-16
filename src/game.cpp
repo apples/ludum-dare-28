@@ -1,10 +1,7 @@
 #include "game.hpp"
 
-<<<<<<< HEAD
-#include "ecitem.hpp"
-=======
 #include "eccollision.hpp"
->>>>>>> Collision Detection Added
+#include "ecitem.hpp"
 #include "ecposition.hpp"
 #include "ecsprite.hpp"
 #include "level.hpp"

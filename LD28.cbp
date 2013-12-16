@@ -65,7 +65,6 @@
 			<Add option="-DZLIB_STATIC" />
 			<Add directory="./irrklang-1.4.0/include" />
 			<Add directory="./yaml-cpp-0.5.1/include" />
-			<Add directory="E:/boost_1_55_0" />
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
