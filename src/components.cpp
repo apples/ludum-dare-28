@@ -41,8 +41,6 @@ void  adjustVelocity(ECPosition& a, const ECPosition& b)
     Bounds a_bounds = make_bounds(a);
     Bounds b_bounds = make_bounds(b);
 
-    // Horizontal
-
     using MP = double ECPosition::*;
     using BP = double Bounds::*;
     auto adjust = [&](MP loc, MP vel, MP wid, BP bot, BP lft, BP rgt)

@@ -95,35 +95,35 @@ Screen::Event Game::tick()
     }
 
     auto& pos = *player->getComponent<ECPosition>();
-    pos.dx=0;
-    pos.dy=0;
-    if (keyUp)    pos.dy+=1;
-    if (keyDown)  pos.dy-=1;
-    if (keyLeft)  pos.dx-=1;
-    if (keyRight) pos.dx+=1;
+    pos.dx *= 0.5;
+    pos.dy *= 0.5;
+    if (keyUp)    pos.dy+=1.0;
+    if (keyDown)  pos.dy-=1.0;
+    if (keyLeft)  pos.dx-=1.0;
+    if (keyRight) pos.dx+=1.0;
 
     {
         auto&& ents = level.getEntities<ECPosition>();
-        for (auto iter = begin(ents), ei = end(ents); iter!=ei; ++iter)
+        auto&& walls = level.getEntities<ECPosition, ECSolid>();
+        for (auto&& tup : ents)
         {
-            auto& tup = *iter;
             Entity& entity = *get<0>(tup);
             ECPosition& ent = *get<1>(tup);
 
-            ECCollision* collide = entity.getComponent<ECCollision>();
+            bool collide = entity.getComponent<ECCollision>();
 
-            if (collide) for (auto iter2 = iter+1; iter2 != ei; ++iter2)
+            if (collide) for (auto&& tup2 : walls)
             {
-                auto& tup2 = *iter2;
-                Entity& entity2 = *get<0>(tup);
+                if (get<0>(tup) == get<0>(tup2)) continue;
+
+                Entity& entity2 = *get<0>(tup2);
                 ECPosition& ent2 = *get<1>(tup2);
 
-                ECCollision* collide2 = entity.getComponent<ECCollision>();
+                bool solid = entity2.getComponent<ECSolid>();
 
-                if (collide2)
+                if (solid)
                 {
                     adjustVelocity(ent, ent2);
-                    adjustVelocity(ent2, ent);
                 }
             }
 
@@ -192,7 +192,7 @@ void Game::draw()
 
     Camera cam;
     cam.ortho(-200.f, 200.f, -150.f, 150.f, -1.f, 1.f);
-    cam.translate(Vec3{-pos.x, -pos.y, 0.f});
+    cam.translate(Vec3{-int(pos.x), -int(pos.y), 0.f});
 
     core.applyCam(cam);
 
@@ -226,7 +226,7 @@ void Game::draw()
         }
 
         mat.push();
-        mat.translate(get<2>(ent)->x, get<2>(ent)->y);
+        mat.translate(int(get<2>(ent)->x), int(get<2>(ent)->y));
         anim->draw(core, mat);
         mat.pop();
     }

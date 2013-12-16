@@ -15,7 +15,7 @@ entities:
     - 
         chest:
             - hp5
-        collision: ~
+        solid: ~
         position:
             x: 32
             y: 32

@@ -12,6 +12,10 @@ class ECCollision
     : public EntityComponent<ECCollision>
 {};
 
+class ECSolid
+    : public EntityComponent<ECSolid>
+{};
+
 class ECItem
     : public EntityComponent<ECItem>
 {

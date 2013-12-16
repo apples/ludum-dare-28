@@ -8,8 +8,8 @@
 
 #include <exception>
 #include <functional>
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
@@ -40,6 +40,21 @@ Level::Level(const string& filename)
         for (int j=0; j<width; ++j)
         {
             tiles[i][j] = file["tiles"][i][j].as<int>();
+
+            switch (tiles[i][j])
+            {
+                case 16:
+                {
+                    Entity* ent = newEntity();
+                    ent->addComponent<ECSolid>();
+                    ECPosition* pos = ent->addComponent<ECPosition>();
+
+                    pos->x = j*32.0;
+                    pos->y = i*32.0;
+                    pos->width = 32.0;
+                    pos->height = 32.0;
+                break;}
+            }
         }
     }
 
@@ -56,7 +71,7 @@ Level::Level(const string& filename)
             componentName = comp.first.as<string>();
             logger->log("Found component ", componentName);
 
-            map<string, function<void()>> funcs = {
+            unordered_map<string, function<void()>> funcs = {
                 { "position", [&]()
                     {
                         ECPosition* ptr = ent->addComponent<ECPosition>();
@@ -73,7 +88,12 @@ Level::Level(const string& filename)
                 } ,
                 { "collision", [&]()
                     {
-                        ECCollision* ptr = ent->addComponent<ECCollision>();
+                        ent->addComponent<ECCollision>();
+                    }
+                } ,
+                { "solid", [&]()
+                    {
+                        ent->addComponent<ECSolid>();
                     }
                 } ,
                 { "sprite", [&]()
