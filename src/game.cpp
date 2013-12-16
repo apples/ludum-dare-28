@@ -171,54 +171,67 @@ Screen::Event Game::tick()
     {
         int r = (pos.y-pos.height/3.0)/32.0+0.5;
         int c = pos.x/32.0+0.5;
-        level.tileAt(r, c) = 1;
+        auto& tile = level.tileAt(r, c);
+
+        if (tile != 1)
+        {
+            tile = 1;
+
+            auto& itemname = level.itemAt(r, c);
+
+            if (!itemname.empty() && itemname != "~")
+            {
+                logger->log("You found a ", itemname);
+
+                Entity* item = level.newEntity();
+
+                ECPosition& cpos = *item->addComponent<ECPosition>();
+                ECSprite& csprite = *item->addComponent<ECSprite>();
+                ECItem& citem = *item->addComponent<ECItem>();
+                *item->addComponent<ECCollision>();
+
+                citem.effect = itemname;
+
+                cpos.x = c*32.0;
+                cpos.y = r*32.0;
+                cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
+                cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
+                cpos.friction = 0.05;
+                cpos.bounce = 1.0;
+                cpos.width = 8.0;
+                cpos.height = 8.0;
+
+                auto& csheet = csprite.anims["item"];
+
+                Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 24, 24);
+
+                csheet.setSpritesheet(move(ctmp));
+                csheet.setSprites({
+                    {0, 0} ,
+                    {0, 1} ,
+                    {0, 2} ,
+                    {0, 3} ,
+                    {0, 4} ,
+                    {0, 5} ,
+                });
+                csheet.setSequence({
+                    {0, 10} ,
+                    {1, 10} ,
+                    {2, 10} ,
+                    {3, 10} ,
+                    {4, 10} ,
+                    {5, 10} ,
+                });
+                csheet.setMode(AnimatedSprite::Mode::BOUNCE);
+
+                csprite.currentAnim = &csheet;
+            }
+        }
 
         if (++cnt == 5)
         {
             cnt = 0;
 
-            Entity* coin = level.newEntity();
-
-            ECPosition& cpos = *coin->addComponent<ECPosition>();
-            ECSprite& csprite = *coin->addComponent<ECSprite>();
-            ECItem& citem = *coin->addComponent<ECItem>();
-            *coin->addComponent<ECCollision>();
-
-            citem.effect = "gold5";
-
-            cpos.x = c*32.0;
-            cpos.y = r*32.0;
-            cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
-            cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
-            cpos.friction = 0.05;
-            cpos.bounce = 1.0;
-            cpos.width = 8.0;
-            cpos.height = 8.0;
-
-            auto& csheet = csprite.anims["coin"];
-
-            Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 24, 24);
-
-            csheet.setSpritesheet(move(ctmp));
-            csheet.setSprites({
-                {0, 0} ,
-                {0, 1} ,
-                {0, 2} ,
-                {0, 3} ,
-                {0, 4} ,
-                {0, 5} ,
-            });
-            csheet.setSequence({
-                {0, 10} ,
-                {1, 10} ,
-                {2, 10} ,
-                {3, 10} ,
-                {4, 10} ,
-                {5, 10} ,
-            });
-            csheet.setMode(AnimatedSprite::Mode::BOUNCE);
-
-            csprite.currentAnim = &csheet;
         }
     }
 

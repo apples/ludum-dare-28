@@ -17,6 +17,7 @@ using namespace Inugami;
 
 Level::Level()
     : tiles()
+    , items()
     , width(0)
     , height(0)
     , entities()
@@ -24,6 +25,7 @@ Level::Level()
 
 Level::Level(const string& filename)
     : tiles()
+    , items()
     , width()
     , height()
     , entities()
@@ -33,12 +35,16 @@ Level::Level(const string& filename)
     width  = file["width"] .as<int>();
     height = file["height"].as<int>();
 
-    tiles.resize(height, Row(width));
+    tiles.resize(height,  Row(width));
+    items.resize(height, IRow(width));
 
     for (int i=0; i<height; ++i)
     {
         for (int j=0; j<width; ++j)
         {
+            auto&& node = file["items"][i][j];
+            if (node) items[i][j] = node.as<Item>();
+
             tiles[i][j] = file["tiles"][i][j].as<int>();
 
             switch (tiles[i][j])
@@ -145,6 +151,11 @@ Level::Level(const string& filename)
 Level::Tile& Level::tileAt(int r, int c)
 {
     return tiles.at(r).at(c);
+}
+
+Level::Item& Level::itemAt(int r, int c)
+{
+    return items.at(r).at(c);
 }
 
 int Level::getWidth() const

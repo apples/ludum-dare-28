@@ -14,7 +14,12 @@ class Level
     using Row = std::vector<Tile>;
     using Field = std::vector<Row>;
 
+    using Item = std::string;
+    using IRow = std::vector<Item>;
+    using IField = std::vector<IRow>;
+
     Field tiles;
+    IField items;
     int width;
     int height;
 
@@ -25,6 +30,7 @@ class Level
     Level(const std::string& filename);
 
     Tile& tileAt(int r, int c);
+    Item& itemAt(int r, int c);
 
     int getWidth() const;
     int getHeight() const;
