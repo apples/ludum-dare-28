@@ -1,6 +1,10 @@
 #include "game.hpp"
 
+<<<<<<< HEAD
 #include "ecitem.hpp"
+=======
+#include "eccollision.hpp"
+>>>>>>> Collision Detection Added
 #include "ecposition.hpp"
 #include "ecsprite.hpp"
 #include "level.hpp"
@@ -26,6 +30,7 @@ Game::Game(Core& c)
 {
     player->addComponent<ECPosition>();
     player->addComponent<ECSprite>();
+    player->addComponent<ECCollision>();
 
     resetPlayer();
 }
@@ -85,8 +90,7 @@ Screen::Event Game::tick()
 
     if (keyESC.pressed()) return {Event::POP, this};
 
-    auto&& ents = level.getEntities<ECSprite>();
-    for (auto&& ent : ents)
+    for (auto&& ent : level.getEntities<ECSprite>())
     {
         auto& anim = get<1>(ent)->currentAnim;
         if (!anim)
@@ -97,11 +101,43 @@ Screen::Event Game::tick()
     }
 
     auto& pos = *player->getComponent<ECPosition>();
+    pos.dx=0;
+    pos.dy=0;
+    if (keyUp)    pos.dy+=1;
+    if (keyDown)  pos.dy-=1;
+    if (keyLeft)  pos.dx-=1;
+    if (keyRight) pos.dx+=1;
 
-    if (keyUp)    ++pos.y;
-    if (keyDown)  --pos.y;
-    if (keyLeft)  --pos.x;
-    if (keyRight) ++pos.x;
+    {
+        auto&& ents = level.getEntities<ECPosition>();
+        for (auto iter = begin(ents), ei = end(ents); iter!=ei; ++iter)
+        {
+            auto& tup = *iter;
+            Entity& entity = *get<0>(tup);
+            ECPosition& ent = *get<1>(tup);
+
+            ECCollision* collide = entity.getComponent<ECCollision>();
+
+            if (collide) for (auto iter2 = iter+1; iter2 != ei; ++iter2)
+            {
+                auto& tup2 = *iter2;
+                Entity& entity2 = *get<0>(tup);
+                ECPosition& ent2 = *get<1>(tup2);
+
+                ECCollision* collide2 = entity.getComponent<ECCollision>();
+
+                if (collide2)
+                {
+                    adjustVelocity(ent, ent2);
+                    adjustVelocity(ent2, ent);
+                }
+
+            }
+            ent.x += ent.dx;
+            ent.y += ent.dy;
+
+        }
+    }
 
     static int cnt = 0;
 

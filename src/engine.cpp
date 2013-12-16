@@ -57,7 +57,7 @@ Engine::Engine(const RenderParams &params)
     logger->log("Adding callbacks...");
     core.addCallback([this]{ tick(); draw(); }, 60.0);
 
-    core.setWindowTitle("Ludum Dare 26", true);
+    core.setWindowTitle("Ludum Dare 28", true);
 
     screens.push_back(ScreenPtr(new MainMenu(core)));
 }
