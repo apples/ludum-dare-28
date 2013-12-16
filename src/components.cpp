@@ -8,17 +8,29 @@
 using namespace std;
 using namespace Inugami;
 
-void ECItem::applyEffect(Entity* ent) const
+void ECItem::applyEffect(Entity* item, Entity* ent) const
 {
     ECPlayer& player = *ent->getComponent<ECPlayer>();
 
     map<string, function<void()>> funcs = {
-        {"hp5", [&]{player.hp += 5;}} ,
-        {"gold5", [&]{player.gold += 5;}} ,
+        {"hp5", [&]
+            {
+                player.hp += 5;
+                item->addComponent<ECDestroy>();
+            }
+        } ,
+        {"gold5", [&]
+            {
+                player.gold += 5;
+                item->addComponent<ECDestroy>();
+            }
+        } ,
     };
+
+    funcs[effect]();
 }
 
-void  adjustVelocity(ECPosition& a, const ECPosition& b)
+void adjustVelocity(ECPosition& a, const ECPosition& b)
 {
     struct Bounds
     {

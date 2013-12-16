@@ -93,6 +93,8 @@
 		<Unit filename="src/entity.hpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/game.hpp" />
+		<Unit filename="src/hud.cpp" />
+		<Unit filename="src/hud.hpp" />
 		<Unit filename="src/inugami/animatedsprite.cpp" />
 		<Unit filename="src/inugami/animatedsprite.hpp" />
 		<Unit filename="src/inugami/camera.cpp" />

@@ -22,10 +22,12 @@ Game::Game(Core& c)
     , tiles(Image::fromPNG("data/img/tiles.png"), 32, 32)
     , level("data/lvl/level1.lvl")
     , player(level.newEntity())
+    , hud(nullptr)
 {
     player->addComponent<ECPosition>();
     player->addComponent<ECSprite>();
     player->addComponent<ECCollision>();
+    player->addComponent<ECPlayer>();
 
     resetPlayer();
 }
@@ -142,7 +144,7 @@ Screen::Event Game::tick()
         auto&& items = level.getEntities<ECPosition, ECItem>();
         for (auto&& tup : items)
         {
-            Entity& entity = *get<0>(tup);
+            Entity* entity = get<0>(tup);
             ECPosition& ipos = *get<1>(tup);
             ECItem& item = *get<2>(tup);
 
@@ -157,8 +159,7 @@ Screen::Event Game::tick()
                 if (mk_left < 0.0 && mk_right > 0.0
                  && mk_bottom < 0.0 && mk_top > 0.0)
                 {
-                    item.applyEffect(player);
-                    entity.addComponent<ECDestroy>();
+                    item.applyEffect(entity, player);
                 }
             }
         }
@@ -183,6 +184,8 @@ Screen::Event Game::tick()
             ECItem& citem = *coin->addComponent<ECItem>();
             *coin->addComponent<ECCollision>();
 
+            citem.effect = "gold5";
+
             cpos.x = c*32.0;
             cpos.y = r*32.0;
             cpos.dx = 5.0 * Random::roll(-1.0, 1.0);
@@ -192,7 +195,7 @@ Screen::Event Game::tick()
             cpos.width = 8.0;
             cpos.height = 8.0;
 
-            auto& csheet = csprite.anims["walk"];
+            auto& csheet = csprite.anims["coin"];
 
             Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 24, 24);
 
@@ -221,6 +224,12 @@ Screen::Event Game::tick()
 
     level.eraseEntities<ECDestroy>();
 
+    if (!hud)
+    {
+        hud = new HUD(core, player);
+        return {Event::PUSH, hud};
+    }
+
     return {Event::NONE, nullptr};
 }
 
@@ -230,7 +239,7 @@ void Game::draw()
 
     Camera cam;
     cam.ortho(-200.f, 200.f, -150.f, 150.f, -1.f, 1.f);
-    cam.translate(Vec3{-int(pos.x), -int(pos.y), 0.f});
+    cam.translate(Vec3{-int(pos.x), -int(pos.y)-6, 0.f});
 
     core.applyCam(cam);
 

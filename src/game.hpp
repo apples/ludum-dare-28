@@ -3,6 +3,7 @@
 
 #include "screen.hpp"
 
+#include "hud.hpp"
 #include "level.hpp"
 
 #include "inugami/core.hpp"
@@ -18,6 +19,8 @@ class Game
     Level level;
 
     Entity* player;
+
+    HUD* hud;
 
 public:
     Game(Inugami::Core& c);

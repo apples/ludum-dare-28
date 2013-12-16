@@ -104,6 +104,7 @@ void Engine::tick()
         }
 
         tunnel = (*iter)->isTunnel();
+        ++iter;
     }
 }
 
