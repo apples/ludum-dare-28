@@ -56,3 +56,8 @@ void AudioDevice::stop(Sound src) const
     src->stop();
     src->drop();
 }
+
+void AudioDevice::quickPlay(const std::string& filename) const
+{
+    engine->play2D(filename.c_str());
+}

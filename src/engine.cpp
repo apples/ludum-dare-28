@@ -101,6 +101,14 @@ void Engine::tick()
                 tunnel = false;
                 continue;
             break;}
+
+            case Screen::Event::SWAP:
+            {
+                screens.erase((++iter).base(), screens.end());
+                screens.push_back(ScreenPtr(ev.value));
+                tunnel = false;
+                continue;
+            break;}
         }
 
         tunnel = (*iter)->isTunnel();

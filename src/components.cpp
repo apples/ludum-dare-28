@@ -1,5 +1,7 @@
 #include "components.hpp"
 
+#include "audiodevice.hpp"
+
 #include "inugami/math.hpp"
 
 #include <map>
@@ -18,6 +20,7 @@ void ECItem::applyEffect(Entity* item, Entity* ent) const
             {
                 player.gold += param;
                 item->addComponent<ECDestroy>();
+                AudioDevice::inst().quickPlay("data/sfx/coin.wav");
             }
         } ,
     };

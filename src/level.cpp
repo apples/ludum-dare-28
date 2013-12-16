@@ -3,11 +3,13 @@
 #include "components.hpp"
 #include "entity.hpp"
 #include "meta.hpp"
+#include "random.hpp"
 
 #include <yaml-cpp/yaml.h>
 
 #include <exception>
 #include <functional>
+#include <random>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -38,6 +40,33 @@ Level::Level(const string& filename)
     tiles.resize(height,  Row(width));
     items.resize(height, IRow(width));
 
+    bool decorate = file["decorate"];
+    function<int(int)> prettify = [](int i){return i;};
+    mt19937 rng;
+
+    if (decorate)
+    {
+        rng.seed(file["decorate"].as<int>());
+
+        prettify = [&](int i)
+        {
+            uniform_int_distribution<int> dist (0,2);
+            uniform_int_distribution<int> dist2 (0,1);
+            if (dist(rng) == 0)
+            {
+                if (dist2(rng) == 0)
+                {
+                    return 32;
+                }
+                else
+                {
+                    return 33;
+                }
+            }
+            return 0;
+        };
+    }
+
     for (int i=0; i<height; ++i)
     {
         for (int j=0; j<width; ++j)
@@ -49,6 +78,11 @@ Level::Level(const string& filename)
 
             switch (tiles[i][j])
             {
+                case 0:
+                {
+                    tiles[i][j] = prettify(tiles[i][j]);
+                break;}
+
                 case 16:
                 {
                     Entity* ent = newEntity();

@@ -24,6 +24,8 @@ class AudioDevice
 
     void stop(Sound src) const;
 
+    void quickPlay(const std::string& filename) const;
+
   private:
     Engine engine;
     std::map<std::string, Source> sourceMap;

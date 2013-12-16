@@ -1,6 +1,7 @@
 #include "hud.hpp"
 
 #include "components.hpp"
+#include "game.hpp"
 
 #include "inugami/camera.hpp"
 #include "inugami/geometry.hpp"
@@ -14,9 +15,8 @@
 using namespace std;
 using namespace Inugami;
 
-HUD::HUD(Inugami::Core& c, Entity* p)
-    : core(c)
-    , player(p)
+HUD::HUD(Game& g)
+    : game(g)
     , coinAnim()
     , font(Image::fromPNG("data/img/font.png"), 8, 8)
 {
@@ -68,14 +68,14 @@ void HUD::draw()
 {
     Camera cam;
     cam.ortho(-200.f, 200.f, -150.f, 150.f, -1.f, 1.f);
-    core.applyCam(cam);
+    game.core.applyCam(cam);
 
     Transform mat;
 
     mat.push();
     {
         mat.translate(0, 144.f);
-        core.modelMatrix(mat);
+        game.core.modelMatrix(mat);
 
         Texture black (Image(1, 1, {0, 0, 0, 255}), false, false);
         black.bind(0);
@@ -89,12 +89,22 @@ void HUD::draw()
     {
         mat.translate(-194, 144);
 
-        coinAnim.draw(core, mat);
+        coinAnim.draw(game.core, mat);
 
         mat.translate(8, 0);
 
         stringstream ss;
-        ss << player->getComponent<ECPlayer>()->gold;
+        ss << game.player->getComponent<ECPlayer>()->gold;
+        drawString(mat, ss.str());
+    }
+    mat.pop();
+
+    mat.push();
+    {
+        mat.translate(186, 144);
+
+        stringstream ss;
+        ss << (game.timeRemaining/60);
         drawString(mat, ss.str());
     }
     mat.pop();
@@ -104,7 +114,7 @@ void HUD::drawString(Transform mat, const string& str)
 {
     for (int c : str)
     {
-        core.modelMatrix(mat);
+        game.core.modelMatrix(mat);
         font.draw(c/16, c%16);
         mat.translate(8, 0);
     }

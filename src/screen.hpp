@@ -11,6 +11,7 @@ public:
             NONE
             , PUSH
             , POP
+            , SWAP
         };
 
         Type type;

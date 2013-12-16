@@ -3,15 +3,17 @@
 
 #include "screen.hpp"
 
-#include "hud.hpp"
 #include "level.hpp"
 
 #include "inugami/core.hpp"
 #include "inugami/spritesheet.hpp"
 
+class HUD;
+
 class Game
     : public Screen
 {
+public:
     Inugami::Core& core;
 
     Inugami::Spritesheet tiles;
@@ -22,7 +24,8 @@ class Game
 
     HUD* hud;
 
-public:
+    int timeRemaining;
+
     Game(Inugami::Core& c);
 
     virtual bool isOpaque() const override;

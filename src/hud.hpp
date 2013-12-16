@@ -12,18 +12,18 @@
 
 #include <string>
 
+class Game;
+
 class HUD
     : public Screen
 {
-    Inugami::Core& core;
-
-    Entity* player;
+    Game& game;
 
     Inugami::AnimatedSprite coinAnim;
     Inugami::Spritesheet    font;
 
 public:
-    HUD(Inugami::Core& c, Entity* p);
+    HUD(Game& g);
 
     virtual bool isOpaque() const override;
     virtual bool isTunnel() const override;

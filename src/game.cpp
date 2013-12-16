@@ -1,6 +1,8 @@
 #include "game.hpp"
 
+#include "audiodevice.hpp"
 #include "components.hpp"
+#include "hud.hpp"
 #include "level.hpp"
 #include "meta.hpp"
 #include "random.hpp"
@@ -23,6 +25,7 @@ Game::Game(Core& c)
     , level("data/lvl/level1.lvl")
     , player(level.newEntity())
     , hud(nullptr)
+    , timeRemaining(60*60)
 {
     player->addComponent<ECPosition>();
     player->addComponent<ECSprite>();
@@ -110,12 +113,15 @@ bool Game::isTunnel() const
 
 Screen::Event Game::tick()
 {
-    auto keyUp = core.iface->key('U'_ivkArrow);
-    auto keyDown = core.iface->key('D'_ivkArrow);
-    auto keyLeft = core.iface->key('L'_ivkArrow);
+    if (timeRemaining == 0) return {Event::POP, this};
+    if (--timeRemaining == 0) return {Event::SWAP, new Game(core)};
+
+    auto keyUp    = core.iface->key('U'_ivkArrow);
+    auto keyDown  = core.iface->key('D'_ivkArrow);
+    auto keyLeft  = core.iface->key('L'_ivkArrow);
     auto keyRight = core.iface->key('R'_ivkArrow);
     auto keySpace = core.iface->key(' '_ivk);
-    auto keyESC = core.iface->key(0_ivkFunc);
+    auto keyESC   = core.iface->key(0_ivkFunc);
 
     if (keyESC.pressed()) return {Event::POP, this};
 
@@ -143,6 +149,7 @@ Screen::Event Game::tick()
         if (tile != 1 && p->digTime < 20)
         {
             tile = 1;
+            AudioDevice::inst().quickPlay("data/sfx/dig.wav");
 
             auto& itemname = level.itemAt(r, c);
 
@@ -321,7 +328,7 @@ Screen::Event Game::tick()
 
     if (!hud)
     {
-        hud = new HUD(core, player);
+        hud = new HUD(*this);
         return {Event::PUSH, hud};
     }
 
