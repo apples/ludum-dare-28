@@ -4,6 +4,7 @@
 
 #include <map>
 #include <functional>
+#include <string>
 
 using namespace std;
 using namespace Inugami;
@@ -13,15 +14,9 @@ void ECItem::applyEffect(Entity* item, Entity* ent) const
     ECPlayer& player = *ent->getComponent<ECPlayer>();
 
     map<string, function<void()>> funcs = {
-        {"hp5", [&]
+        {"gold", [&]
             {
-                player.hp += 5;
-                item->addComponent<ECDestroy>();
-            }
-        } ,
-        {"gold5", [&]
-            {
-                player.gold += 5;
+                player.gold += param;
                 item->addComponent<ECDestroy>();
             }
         } ,

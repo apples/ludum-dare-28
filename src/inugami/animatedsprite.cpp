@@ -90,7 +90,7 @@ void AnimatedSprite::draw(Core& core, Transform in) const
     if (ended) return;
 
     auto& sprite = sprites[sequence[pos].first];
-    in.scale(Vec3{(flipX)?-1.f:1.f, (flipY)?-1.f:1.f, 1.f});
+    in.scale(Vec3{((flipX)?-1.f:1.f)*scale, ((flipY)?-1.f:1.f)*scale, 1.f});
     in.rotate(rot, Vec3{0.f, 0.f, 1.f});
     core.modelMatrix(in);
     sheet.draw(sprite.first, sprite.second);

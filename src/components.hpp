@@ -26,6 +26,7 @@ class ECItem
   public:
     std::string effect;
     int cooldown = 30;
+    int param = 0;
 
     void applyEffect(Entity* item, Entity* player) const;
 };

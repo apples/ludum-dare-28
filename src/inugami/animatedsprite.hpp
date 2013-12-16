@@ -167,6 +167,8 @@ public:
      */
     float rot;
 
+    float scale = 1.f;
+
 private:
     Spritesheet sheet;
     SpriteList sprites;

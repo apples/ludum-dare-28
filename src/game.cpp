@@ -183,6 +183,10 @@ Screen::Event Game::tick()
             {
                 logger->log("You found a ", itemname);
 
+                stringstream ss (itemname);
+                int param;
+                ss >> itemname >> param;
+
                 Entity* item = level.newEntity();
 
                 ECPosition& cpos = *item->addComponent<ECPosition>();
@@ -191,6 +195,7 @@ Screen::Event Game::tick()
                 *item->addComponent<ECCollision>();
 
                 citem.effect = itemname;
+                citem.param = param;
 
                 cpos.x = c*32.0;
                 cpos.y = r*32.0;
@@ -198,12 +203,19 @@ Screen::Event Game::tick()
                 cpos.dy = 5.0 * Random::roll(-1.0, 1.0);
                 cpos.friction = 0.05;
                 cpos.bounce = 1.0;
+
                 cpos.width = 8.0;
                 cpos.height = 8.0;
 
+                if (itemname == "gold")
+                {
+                    cpos.width *= (param+5)/10.0;
+                    cpos.height *= (param+5)/10.0;
+                }
+
                 auto& csheet = csprite.anims["item"];
 
-                Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 24, 24);
+                Spritesheet ctmp (Image::fromPNG("data/img/coin.png"), 16, 16);
 
                 csheet.setSpritesheet(move(ctmp));
                 csheet.setSprites({
@@ -213,16 +225,21 @@ Screen::Event Game::tick()
                     {0, 3} ,
                     {0, 4} ,
                     {0, 5} ,
+                    {0, 6} ,
+                    {0, 7} ,
                 });
                 csheet.setSequence({
-                    {0, 10} ,
-                    {1, 10} ,
-                    {2, 10} ,
-                    {3, 10} ,
-                    {4, 10} ,
-                    {5, 10} ,
+                    {0, 6} ,
+                    {1, 6} ,
+                    {2, 6} ,
+                    {3, 6} ,
+                    {4, 6} ,
+                    {5, 6} ,
+                    {6, 6} ,
+                    {7, 6} ,
                 });
                 csheet.setMode(AnimatedSprite::Mode::BOUNCE);
+                csheet.scale = 0.5;
 
                 csprite.currentAnim = &csheet;
             }
@@ -286,7 +303,16 @@ void Game::draw()
         }
 
         mat.push();
+
         mat.translate(int(get<2>(ent)->x), int(get<2>(ent)->y));
+
+        ECItem* item = get<0>(ent)->getComponent<ECItem>();
+        if (item && item->effect == "gold")
+        {
+            double scl = get<2>(ent)->width/8.0;
+            mat.scale(Vec3{scl, scl, 1.0});
+        }
+
         anim->draw(core, mat);
         mat.pop();
     }

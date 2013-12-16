@@ -20,7 +20,7 @@ HUD::HUD(Inugami::Core& c, Entity* p)
     , coinAnim()
     , font(Image::fromPNG("data/img/font.png"), 8, 8)
 {
-    Spritesheet tmp (Image::fromPNG("data/img/coin.png"), 24, 24);
+    Spritesheet tmp (Image::fromPNG("data/img/coin.png"), 16, 16);
 
     coinAnim.setSpritesheet(move(tmp));
     coinAnim.setSprites({
@@ -30,16 +30,21 @@ HUD::HUD(Inugami::Core& c, Entity* p)
         {0, 3} ,
         {0, 4} ,
         {0, 5} ,
+        {0, 6} ,
+        {0, 7} ,
     });
     coinAnim.setSequence({
-        {0, 10} ,
-        {1, 10} ,
-        {2, 10} ,
-        {3, 10} ,
-        {4, 10} ,
-        {5, 10} ,
+        {0, 6} ,
+        {1, 6} ,
+        {2, 6} ,
+        {3, 6} ,
+        {4, 6} ,
+        {5, 6} ,
+        {6, 6} ,
+        {7, 6} ,
     });
     coinAnim.setMode(AnimatedSprite::Mode::BOUNCE);
+    coinAnim.scale = 0.5;
 }
 
 bool HUD::isOpaque() const
@@ -82,7 +87,8 @@ void HUD::draw()
 
     mat.push();
     {
-        mat.translate(-192, 144);
+        mat.translate(-194, 144);
+
         coinAnim.draw(core, mat);
 
         mat.translate(8, 0);
