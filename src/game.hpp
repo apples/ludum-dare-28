@@ -8,6 +8,8 @@
 #include "inugami/core.hpp"
 #include "inugami/spritesheet.hpp"
 
+#include <string>
+
 class HUD;
 
 class Game
@@ -26,7 +28,7 @@ public:
 
     int timeRemaining;
 
-    Game(Inugami::Core& c);
+    Game(Inugami::Core& c, const std::string& file);
 
     virtual bool isOpaque() const override;
     virtual bool isTunnel() const override;

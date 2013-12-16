@@ -23,6 +23,7 @@ Level::Level()
     , width(0)
     , height(0)
     , entities()
+    , nextLevel()
 {}
 
 Level::Level(const string& filename)
@@ -31,8 +32,12 @@ Level::Level(const string& filename)
     , width()
     , height()
     , entities()
+    , nextLevel()
 {
     YAML::Node file = YAML::LoadFile(filename);
+
+    auto&& nlvl = file["next"];
+    if (nlvl) nextLevel = nlvl.as<string>();
 
     width  = file["width"] .as<int>();
     height = file["height"].as<int>();

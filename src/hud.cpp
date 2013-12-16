@@ -19,6 +19,7 @@ HUD::HUD(Game& g)
     : game(g)
     , coinAnim()
     , font(Image::fromPNG("data/img/font.png"), 8, 8)
+    , timerPulse(0)
 {
     Spritesheet tmp (Image::fromPNG("data/img/coin.png"), 16, 16);
 
@@ -103,6 +104,13 @@ void HUD::draw()
     {
         mat.translate(186, 144);
 
+        if (timerPulse > 0)
+        {
+            double scl = 1.f+(timerPulse/60.f);
+            mat.scale(Vec3{scl, scl, 1.f});
+            --timerPulse;
+        }
+
         stringstream ss;
         ss << (game.timeRemaining/60);
         drawString(mat, ss.str());
@@ -118,4 +126,9 @@ void HUD::drawString(Transform mat, const string& str)
         font.draw(c/16, c%16);
         mat.translate(8, 0);
     }
+}
+
+void HUD::pulseCounter()
+{
+    timerPulse = 60;
 }

@@ -22,6 +22,8 @@ class HUD
     Inugami::AnimatedSprite coinAnim;
     Inugami::Spritesheet    font;
 
+    int timerPulse;
+
 public:
     HUD(Game& g);
 
@@ -32,6 +34,8 @@ public:
     virtual void draw() override;
 
     void drawString(Inugami::Transform mat, const std::string& str);
+
+    void pulseCounter();
 };
 
 #endif // HUD_HPP

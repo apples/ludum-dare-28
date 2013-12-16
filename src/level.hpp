@@ -26,6 +26,8 @@ class Level
     std::vector<std::shared_ptr<Entity>> entities;
 
   public:
+    std::string nextLevel;
+
     Level();
     Level(const std::string& filename);
 

@@ -19,10 +19,10 @@
 using namespace std;
 using namespace Inugami;
 
-Game::Game(Core& c)
+Game::Game(Core& c, const std::string& file)
     : core(c)
     , tiles(Image::fromPNG("data/img/tiles.png"), 32, 32)
-    , level("data/lvl/level1.lvl")
+    , level(file)
     , player(level.newEntity())
     , hud(nullptr)
     , timeRemaining(60*60)
@@ -114,7 +114,31 @@ bool Game::isTunnel() const
 Screen::Event Game::tick()
 {
     if (timeRemaining == 0) return {Event::POP, this};
-    if (--timeRemaining == 0) return {Event::SWAP, new Game(core)};
+    if (--timeRemaining == 0)
+    {
+        ECPlayer* p = player->getComponent<ECPlayer>();
+        if (p->gold > 50)
+        {
+            if (!level.nextLevel.empty())
+            {
+                return {Event::SWAP, new Game(core, level.nextLevel)};
+            }
+            else
+            {
+                return {Event::POP, this};
+            }
+        }
+        else
+        {
+            return {Event::POP, this};
+        }
+    }
+
+    if (timeRemaining%60 == 0 && timeRemaining/60 <= 5)
+    {
+        AudioDevice::inst().quickPlay("data/sfx/count.wav");
+        hud->pulseCounter();
+    }
 
     auto keyUp    = core.iface->key('U'_ivkArrow);
     auto keyDown  = core.iface->key('D'_ivkArrow);
