@@ -1,7 +1,6 @@
 width: 20
 height: 20
 decorate: 33
-
 tiles:
     - [16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16]
     - [16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,16]
@@ -45,53 +44,3 @@ items:
     - [       ~,       ~, gold 20,       ~,       ~,       ~, gold  5,       ~,       ~, gold 20,       ~,       ~,       ~, gold  5,       ~,       ~,       ~,       ~, gold  5,       ~]
     - [       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~,       ~]
 entities:
-    - 
-        chest:
-            - hp5
-        solid:       ~
-        position:
-            x: 32
-            y: 32
-            width: 24
-            height: 24
-        sprite:
-            closed:
-                image: data/img/chest1.png
-                width: 24
-                height: 24
-                mode: 1
-                frames:
-                    - 
-                        row: 0
-                        col: 0
-                        duration: 1
-            open:
-                image: data/img/chest1.png
-                width: 24
-                height: 24
-                mode: 2
-                frames:
-                    - 
-                        row: 0
-                        col: 0
-                        duration: 8
-                    - 
-                        row: 0
-                        col: 1
-                        duration: 8
-                    - 
-                        row: 0
-                        col: 2
-                        duration: 8
-                    - 
-                        row: 0
-                        col: 3
-                        duration: 8
-                    - 
-                        row: 0
-                        col: 4
-                        duration: 8
-                    - 
-                        row: 0
-                        col: 5
-                        duration: 8

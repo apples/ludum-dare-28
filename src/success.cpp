@@ -16,6 +16,7 @@ Success::Success(Inugami::Core& c, int s)
     : core(c)
     , font(Image::fromPNG("data/img/font.png"), 8, 8)
     , score(s)
+    , bg(Image::fromPNG("data/img/success.png"), false, false)
 {}
 
 bool Success::isOpaque() const
@@ -42,7 +43,6 @@ void Success::draw()
     core.applyCam(Camera{}.ortho(-400.f, 400.f, -300.f, 300.f, -1.f, 1.f));
     core.modelMatrix(Transform{});
 
-    Texture bg (Image::fromPNG("data/img/success.png"), false, false);
     bg.bind(0);
 
     Mesh(Geometry::fromRect(800.f, 600.f)).draw();

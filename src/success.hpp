@@ -5,6 +5,7 @@
 
 #include "inugami/core.hpp"
 #include "inugami/spritesheet.hpp"
+#include "inugami/texture.hpp"
 
 class Game;
 
@@ -14,6 +15,7 @@ class Success
     Inugami::Core& core;
 
     Inugami::Spritesheet font;
+    Inugami::Texture bg;
 
     int score;
 
