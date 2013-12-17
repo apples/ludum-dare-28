@@ -7,4 +7,5 @@
 !.gitignore
 !Makefile
 irrKlang-1.4.0/
+shovel_master/
 yaml-cpp-0.5.1/

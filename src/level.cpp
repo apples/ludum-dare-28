@@ -98,6 +98,8 @@ Level::Level(const string& filename)
                     pos->y = i*32.0;
                     pos->width = 32.0;
                     pos->height = 32.0;
+
+                    if (decorate) tiles[i][j] += rng()%2;
                 break;}
             }
         }
