@@ -28,7 +28,9 @@ public:
 
     int timeRemaining;
 
-    Game(Inugami::Core& c, const std::string& file);
+    int previousScore;
+
+    Game(Inugami::Core& c, const std::string& file, int ps);
 
     virtual bool isOpaque() const override;
     virtual bool isTunnel() const override;

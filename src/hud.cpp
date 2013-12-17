@@ -33,18 +33,30 @@ HUD::HUD(Game& g)
         {0, 5} ,
         {0, 6} ,
         {0, 7} ,
+        {1, 1} ,
+        {1, 2} ,
+        {1, 3} ,
+        {1, 4} ,
+        {1, 5} ,
+        {1, 6} ,
     });
     coinAnim.setSequence({
-        {0, 6} ,
-        {1, 6} ,
-        {2, 6} ,
-        {3, 6} ,
-        {4, 6} ,
-        {5, 6} ,
-        {6, 6} ,
-        {7, 6} ,
+        { 0, 6} ,
+        { 1, 6} ,
+        { 2, 6} ,
+        { 3, 6} ,
+        { 4, 6} ,
+        { 5, 6} ,
+        { 6, 6} ,
+        { 7, 6} ,
+        { 8, 6} ,
+        { 9, 6} ,
+        {10, 6} ,
+        {11, 6} ,
+        {12, 6} ,
+        {13, 6} ,
     });
-    coinAnim.setMode(AnimatedSprite::Mode::BOUNCE);
+    coinAnim.setMode(AnimatedSprite::Mode::LOOP);
     coinAnim.scale = 0.5;
 }
 

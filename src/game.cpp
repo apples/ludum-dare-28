@@ -2,10 +2,12 @@
 
 #include "audiodevice.hpp"
 #include "components.hpp"
+#include "gameover.hpp"
 #include "hud.hpp"
 #include "level.hpp"
 #include "meta.hpp"
 #include "random.hpp"
+#include "success.hpp"
 
 #include "inugami/camera.hpp"
 #include "inugami/geometry.hpp"
@@ -19,13 +21,14 @@
 using namespace std;
 using namespace Inugami;
 
-Game::Game(Core& c, const std::string& file)
+Game::Game(Core& c, const std::string& file, int ps)
     : core(c)
     , tiles(Image::fromPNG("data/img/tiles.png"), 32, 32)
     , level(file)
     , player(level.newEntity())
     , hud(nullptr)
     , timeRemaining(60*60)
+    , previousScore(ps)
 {
     player->addComponent<ECPosition>();
     player->addComponent<ECSprite>();
@@ -45,25 +48,21 @@ void Game::resetPlayer()
     pos.width = 24;
     pos.height = 24;
 
+    Spritesheet img (Image::fromPNG("data/img/player.png"), 24, 24);
+
     {
         auto& sheet = sprite.anims["walk"];
 
-        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSpritesheet(img);
         sheet.setSprites({
-            {0, 0} ,
-            {0, 1} ,
-            {0, 2} ,
-            {0, 3} ,
-            {0, 4} ,
-            {0, 5} ,
+            {2, 0} ,
+            {2, 1} ,
+            {2, 2} ,
         });
         sheet.setSequence({
             {0, 6} ,
             {1, 6} ,
             {2, 6} ,
-            {3, 6} ,
-            {4, 6} ,
-            {5, 6} ,
         });
         sheet.setMode(AnimatedSprite::Mode::BOUNCE);
 
@@ -73,24 +72,45 @@ void Game::resetPlayer()
     {
         auto& sheet = sprite.anims["dig"];
 
-        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSpritesheet(img);
         sheet.setSprites({
-            {0, 0} ,
-            {0, 2} ,
-            {0, 5} ,
+            {1, 0} ,
+            {1, 1} ,
+            {1, 2} ,
+            {1, 3} ,
+            {1, 4} ,
+            {1, 5} ,
         });
         sheet.setSequence({
-            {0, 1} ,
-            {1, 1} ,
-            {2, 1} ,
+            {0, 7} ,
+            {1, 7} ,
+            {2, 7} ,
+            {3, 7} ,
+            {4, 7} ,
+            {5, 14} ,
         });
-        sheet.setMode(AnimatedSprite::Mode::BOUNCE);
+        sheet.setMode(AnimatedSprite::Mode::NORMAL);
+    }
+
+    {
+        auto& sheet = sprite.anims["stab"];
+
+        sheet.setSpritesheet(img);
+        sheet.setSprites({
+            {3, 0} ,
+            {1, 5} ,
+        });
+        sheet.setSequence({
+            {0, 7} ,
+            {1, 14} ,
+        });
+        sheet.setMode(AnimatedSprite::Mode::NORMAL);
     }
 
     {
         auto& sheet = sprite.anims["idle"];
 
-        sheet.setSpritesheet(Spritesheet(Image::fromPNG("data/img/chest1.png"), 24, 24));
+        sheet.setSpritesheet(img);
         sheet.setSprites({
             {0, 0} ,
         });
@@ -117,20 +137,23 @@ Screen::Event Game::tick()
     if (--timeRemaining == 0)
     {
         ECPlayer* p = player->getComponent<ECPlayer>();
-        if (p->gold > 50)
+        if (p->gold >= 50)
         {
             if (!level.nextLevel.empty())
             {
-                return {Event::SWAP, new Game(core, level.nextLevel)};
+                logger->log("Loading ", level.nextLevel);
+                return {Event::SWAP, new Game(core, level.nextLevel, p->gold+previousScore)};
             }
             else
             {
-                return {Event::POP, this};
+                logger->log("Game success");
+                return {Event::SWAP, new Success(core, p->gold+previousScore)};
             }
         }
         else
         {
-            return {Event::POP, this};
+            logger->log("Game over");
+            return {Event::SWAP, new GameOver(core)};
         }
     }
 
@@ -161,19 +184,23 @@ Screen::Event Game::tick()
 
     ECPosition& pos = *player->getComponent<ECPosition>();
     ECPlayer* p = player->getComponent<ECPlayer>();
+    ECSprite* spr = player->getComponent<ECSprite>();
 
     if (p->digTime > 0)
     {
         --p->digTime;
 
-        int r = (pos.y-pos.height/3.0)/32.0+0.5;
+        int r = (pos.y-pos.height/2.0)/32.0+0.5;
         int c = pos.x/32.0+0.5;
         auto& tile = level.tileAt(r, c);
 
-        if (tile != 1 && p->digTime < 20)
+        if (tile != 1 && p->digTime < 14)
         {
             tile = 1;
             AudioDevice::inst().quickPlay("data/sfx/dig.wav");
+
+            spr->currentAnim = &spr->anims["stab"];
+            spr->currentAnim->reset();
 
             auto& itemname = level.itemAt(r, c);
 
@@ -223,18 +250,30 @@ Screen::Event Game::tick()
                     {0, 5} ,
                     {0, 6} ,
                     {0, 7} ,
+                    {1, 1} ,
+                    {1, 2} ,
+                    {1, 3} ,
+                    {1, 4} ,
+                    {1, 5} ,
+                    {1, 6} ,
                 });
                 csheet.setSequence({
-                    {0, 6} ,
-                    {1, 6} ,
-                    {2, 6} ,
-                    {3, 6} ,
-                    {4, 6} ,
-                    {5, 6} ,
-                    {6, 6} ,
-                    {7, 6} ,
+                    { 0, 6} ,
+                    { 1, 6} ,
+                    { 2, 6} ,
+                    { 3, 6} ,
+                    { 4, 6} ,
+                    { 5, 6} ,
+                    { 6, 6} ,
+                    { 7, 6} ,
+                    { 8, 6} ,
+                    { 9, 6} ,
+                    {10, 6} ,
+                    {11, 6} ,
+                    {12, 6} ,
+                    {13, 6} ,
                 });
-                csheet.setMode(AnimatedSprite::Mode::BOUNCE);
+                csheet.setMode(AnimatedSprite::Mode::LOOP);
                 csheet.scale = 0.5;
 
                 csprite.currentAnim = &csheet;
@@ -243,8 +282,7 @@ Screen::Event Game::tick()
     }
     else
     {
-        ECSprite* ps = player->getComponent<ECSprite>();
-        ps->currentAnim = &ps->anims["idle"];
+        spr->currentAnim = &spr->anims["idle"];
         bool wlk = false;
         if (keyUp)
         {
@@ -266,7 +304,7 @@ Screen::Event Game::tick()
             pos.dx+=1.0;
             wlk = true;
         }
-        if (wlk) ps->currentAnim = &ps->anims["walk"];
+        if (wlk) spr->currentAnim = &spr->anims["walk"];
     }
 
     auto&& walls = level.getEntities<ECPosition, ECSolid>();
@@ -333,17 +371,16 @@ Screen::Event Game::tick()
 
     if (keySpace.pressed())
     {
-        int r = (pos.y-pos.height/3.0)/32.0+0.5;
+        int r = (pos.y-pos.height/2.0)/32.0+0.5;
         int c = pos.x/32.0+0.5;
         auto& tile = level.tileAt(r, c);
 
         if (tile != 1)
         {
             {
-                p->digTime = 60;
-                ECSprite* ps = player->getComponent<ECSprite>();
-                ps->currentAnim = &ps->anims["dig"];
-                ps->currentAnim->reset();
+                p->digTime = 56;
+                spr->currentAnim = &spr->anims["dig"];
+                spr->currentAnim->reset();
             }
         }
     }

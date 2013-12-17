@@ -93,6 +93,8 @@
 		<Unit filename="src/entity.hpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/game.hpp" />
+		<Unit filename="src/gameover.cpp" />
+		<Unit filename="src/gameover.hpp" />
 		<Unit filename="src/hud.cpp" />
 		<Unit filename="src/hud.hpp" />
 		<Unit filename="src/inugami/animatedsprite.cpp" />
@@ -152,6 +154,8 @@
 		<Unit filename="src/random.hpp" />
 		<Unit filename="src/screen.cpp" />
 		<Unit filename="src/screen.hpp" />
+		<Unit filename="src/success.cpp" />
+		<Unit filename="src/success.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

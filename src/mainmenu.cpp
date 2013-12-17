@@ -37,7 +37,7 @@ Screen::Event MainMenu::tick()
 
     if (keyESC.pressed()) return {Event::POP, this};
 
-    if (keyEnter.pressed()) return {Event::PUSH, new Game(core, "data/lvl/level1.lvl")};
+    if (keyEnter.pressed()) return {Event::PUSH, new Game(core, "data/lvl/level1.lvl", 0)};
 
     return {Event::NONE, nullptr};
 }
