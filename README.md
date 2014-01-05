@@ -6,8 +6,9 @@ My team's Ludum Dare 28 entry.
 Team
 ---
 
-- DBRalir - Programmer, Designer
+- 5¢BAZOOKA - Design
 - Aarithian - Artist
-- Chume - Programmer
-- Reginald Simmons - Musician
 - Ben "Juicy" Olson - Artist
+- Chume - Programmer
+- DBRalir - Programmer, Designer
+- Reginald Simmons - Musician
